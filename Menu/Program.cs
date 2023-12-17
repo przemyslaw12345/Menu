@@ -4,20 +4,25 @@ using Menu.Repository;
 using System.Text.Json;
 
 bool isWroking = true;
-var menuRepository = new MenuSqlRepository<rezMenu>(new MenuDbContext());
-menuRepository.AddedItem += AddEventItemToList;
-menuRepository.RemovedItem += RemoveEventItemToList;
+var drinkRepository = new MenuSqlRepository<Drink>(new MenuDbContext());
+drinkRepository.AddedItem += AddEventItemToList;
+drinkRepository.RemovedItem += RemoveEventItemToList;
+
+var foodRepository = new MenuSqlRepository<Food>(new MenuDbContext());
+foodRepository.AddedItem += AddEventItemToList;
+foodRepository.RemovedItem += RemoveEventItemToList;
+
 
 while (isWroking)
 {
 	Console.Clear();
 	Greeting();
 	string optionSelected = optionSelectedMethod();
-	isWroking = selectingWhatUserWishesToDoMethod(isWroking, optionSelected, menuRepository);
+	isWroking = selectingWhatUserWishesToDoMethod(isWroking, optionSelected, drinkRepository, foodRepository);
 	Console.ReadKey();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-void AddEventItemToList(object? sender, rezMenu e)
+void AddEventItemToList(object? sender, cafeMenu e)
 {
 	const string addedItemEvent = "AddedItemEvent.json";
 	List<string> addedItemEventList = new List<string>();
@@ -32,7 +37,7 @@ void AddEventItemToList(object? sender, rezMenu e)
 	jsonAddedItemEventList = JsonSerializer.Serialize(addedItemEventList);
 	File.WriteAllText(addedItemEvent, jsonAddedItemEventList);
 }
-void RemoveEventItemToList(object? sender, rezMenu e)
+void RemoveEventItemToList(object? sender, cafeMenu e)
 {
 	const string removedItemEvent = "RemovedItemEvent.json";
 	List<string> removedItemEventList = new List<string>();
@@ -65,18 +70,18 @@ void Greeting()
 		);
 }
 static string optionSelectedMethod() => Console.ReadLine().ToLower();
-bool selectingWhatUserWishesToDoMethod(bool isWroking, string optionSelected, MenuSqlRepository<rezMenu> menuRepository)
+bool selectingWhatUserWishesToDoMethod(bool isWroking, string optionSelected, MenuSqlRepository<Drink> drinkRepository, MenuSqlRepository<Food> foodRepository)
 {
 	switch (optionSelected)
 	{
 		case "view":
-			ViewMenuGeneralMethod(menuRepository);
+			ViewMenuGeneralMethod(drinkRepository, foodRepository);
 			break;
 		case "add":
-			AddToMenuMethod(menuRepository);
+			AddToMenuMethod(drinkRepository, foodRepository);
 			break;
 		case "remove":
-			RemoveFromMenuMethod(menuRepository);
+			RemoveFromMenuMethod(drinkRepository, foodRepository);
 			break;
 		case "exit":
 			Console.WriteLine("Thank you for trying Soylent Green Cafe where our Customers are our specialty!");
@@ -90,11 +95,12 @@ bool selectingWhatUserWishesToDoMethod(bool isWroking, string optionSelected, Me
 	return isWroking;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-void ViewMenuGeneralMethod(IRepository<rezMenu> menuRepository)
+void ViewMenuGeneralMethod(IRepository<Drink> drinkRepository, IRepository<Food> foodRepository)
 {
 	Console.Clear() ;
 	MenuGreeting();
-	ViewMenu(menuRepository);
+	ViewMenu(drinkRepository);
+	ViewMenu(foodRepository);
 }
 void MenuGreeting()
 {
@@ -111,7 +117,7 @@ void ViewMenu(IReadRepository<IMenu> menuRepository)
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-void AddToMenuMethod(MenuSqlRepository<rezMenu> menuRepository)
+void AddToMenuMethod(IRepository<Drink> drinkRepository, IRepository<Food> foodRepository)
 {
 	bool isWorking = true;
 	while (isWorking)
@@ -119,7 +125,7 @@ void AddToMenuMethod(MenuSqlRepository<rezMenu> menuRepository)
 		Console.Clear();
 		WhatToAddText();
 		string optionToAddSelected = optionToAddSelectedMethod();
-		selectingWhatToAddToTheMenuMethod(optionToAddSelected, menuRepository);
+		selectingWhatToAddToTheMenuMethod(optionToAddSelected, drinkRepository, foodRepository);
 		isWorking = ContinueAddingMethod(isWorking);
 	}
 }
@@ -132,7 +138,7 @@ void WhatToAddText()
 		);
 }
 string optionToAddSelectedMethod() => Console.ReadLine().ToLower();
-void selectingWhatToAddToTheMenuMethod(string optionToAddSelected, MenuSqlRepository<rezMenu> menuRepository)
+void selectingWhatToAddToTheMenuMethod(string optionToAddSelected, IRepository<Drink> drinkRepository, IRepository<Food> foodRepository)
 {
 	bool isWorkingSubLoop = true;
 	while (isWorkingSubLoop)
@@ -140,11 +146,11 @@ void selectingWhatToAddToTheMenuMethod(string optionToAddSelected, MenuSqlReposi
 		switch (optionToAddSelected)
 		{
 			case "drink":
-				AddDrinkMethod(menuRepository);
+				AddDrinkMethod(drinkRepository);
 				isWorkingSubLoop = false;
 				break;
 			case "meal":
-				AddMealMethod(menuRepository);
+				AddMealMethod(foodRepository);
 				isWorkingSubLoop = false;
 				break;
 			default:
@@ -155,15 +161,14 @@ void selectingWhatToAddToTheMenuMethod(string optionToAddSelected, MenuSqlReposi
 				break;
 		}
 	}
-
 }
-void AddDrinkMethod(IWriteRepository<Drinks> drinkRepository)
+void AddDrinkMethod(IWriteRepository<Drink> drinkRepository)
 {
 	Console.WriteLine($"What is the drinks name? {Environment.NewLine}");
 	string nameOfDrink = NamingDrinkMethod();
 	Console.WriteLine($"What is the drinks price? {Environment.NewLine}");
 	float priceOfDrink = PriceDrinkMethod();
-	drinkRepository.Add(new Drinks { itemName = nameOfDrink, itemPrice = priceOfDrink });
+	drinkRepository.Add(new Drink { itemName = nameOfDrink, itemPrice = priceOfDrink });
 	drinkRepository.Save();
 }
 string NamingDrinkMethod() => Console.ReadLine();
@@ -205,30 +210,66 @@ bool ContinueAddingMethod(bool isWorking)
 	return isWorking;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RemoveFromMenuMethod(MenuSqlRepository<rezMenu> menuRepository)
+void RemoveFromMenuMethod(IRepository<Drink> drinkRepository, IRepository<Food> foodRepository)
 {
 	bool isWorking = true;
 	while (isWorking)
 	{
 		Console.Clear();
-		WhatToRemoveText(menuRepository);
-		int optionToRemoveSelected = optionToRemoveSelectedMethod();
-		selectingWhatToRemoveFromTheMenuMethod(optionToRemoveSelected, menuRepository);
+		WhatToRemoveText();
+		string optionToRemoveSelected = optionToRemoveSelectedMethod();
+		selectingWhatToRemoveFromTheMenuMethod(optionToRemoveSelected, drinkRepository, foodRepository);
 		isWorking = ContinueRemovingMethod(isWorking);
 	}
 }
-void WhatToRemoveText(MenuSqlRepository<rezMenu> menuRepository)
+void WhatToRemoveText()
 {
-    Console.WriteLine("Which item # would you like to remove from our menu?");
-	ViewMenu(menuRepository);
+    Console.WriteLine("Would you like to remove a [drink] or [meal] from the menu");
 }
-int optionToRemoveSelectedMethod() => int.Parse(Console.ReadLine());
-void selectingWhatToRemoveFromTheMenuMethod(int optionToRemoveSelected, IRepository<rezMenu> menuRepository)
+string optionToRemoveSelectedMethod() =>(Console.ReadLine());
+void selectingWhatToRemoveFromTheMenuMethod(string optionToAddSelected, IRepository<Drink> drinkRepository, IRepository<Food> foodRepository)
 {
-	var item = menuRepository.GetSpecific(optionToRemoveSelected);
-	menuRepository.RemoveItem(item);
-	menuRepository.Save();
+	bool isWorkingSubLoop = true;
+	while (isWorkingSubLoop)
+	{
+		switch (optionToAddSelected)
+		{
+			case "drink":
+				RemoveDrinkMethod(drinkRepository);
+				isWorkingSubLoop = false;
+				break;
+			case "meal":
+				RemoveMealMethod(foodRepository);
+				isWorkingSubLoop = false;
+				break;
+			default:
+				Console.WriteLine("You entered an invalid option, please try again");
+				optionToAddSelected = optionToAddSelectedMethod();
+				isWorkingSubLoop = true;
+				Console.ReadKey();
+				break;
+		}
+	}
 }
+void RemoveDrinkMethod(IRepository<Drink> drinkRepository)
+{
+    Console.WriteLine("Which drink do you want to remove?");
+    ViewMenu(drinkRepository);
+	int removeOptionNumber = RemoveOptionNumberMethod();
+	var itemToRemove = drinkRepository.GetSpecific(removeOptionNumber);
+	drinkRepository.RemoveItem(itemToRemove);
+	drinkRepository.Save();
+}
+void RemoveMealMethod(IRepository<Food> foodRepository)
+{
+	Console.WriteLine("Which meal do you want to remove?");
+	ViewMenu(foodRepository);
+	int removeOptionNumber = RemoveOptionNumberMethod();
+	var itemToRemove = foodRepository.GetSpecific(removeOptionNumber);
+	foodRepository.RemoveItem(itemToRemove);
+	foodRepository.Save();
+}
+int RemoveOptionNumberMethod()=> int.Parse(Console.ReadLine());
 bool ContinueRemovingMethod(bool isWorking)
 {
 	bool isWorkingSubLoop = true;

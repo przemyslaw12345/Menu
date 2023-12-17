@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Menu.Migrations
 {
     [DbContext(typeof(MenuDbContext))]
-    [Migration("20231213190849_M1")]
-    partial class M1
+    [Migration("20231217161703_m1")]
+    partial class m1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,18 +24,13 @@ namespace Menu.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Menu.Classes_Interfaces.rezMenu", b =>
+            modelBuilder.Entity("Menu.Classes_Interfaces.Drink", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
 
                     b.Property<string>("itemName")
                         .IsRequired()
@@ -46,25 +41,27 @@ namespace Menu.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("menu");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("rezMenu");
-
-                    b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("Menu.Classes_Interfaces.Drinks", b =>
-                {
-                    b.HasBaseType("Menu.Classes_Interfaces.rezMenu");
-
-                    b.HasDiscriminator().HasValue("Drinks");
+                    b.ToTable("drinks");
                 });
 
             modelBuilder.Entity("Menu.Classes_Interfaces.Food", b =>
                 {
-                    b.HasBaseType("Menu.Classes_Interfaces.rezMenu");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.HasDiscriminator().HasValue("Food");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("itemName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("itemPrice")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("food");
                 });
 #pragma warning restore 612, 618
         }

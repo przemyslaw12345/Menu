@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace Menu.Classes_Interfaces
 {
-	public class rezMenu : IMenu
+	public class Drink : cafeMenu
 	{
-		public int Id { get; set; }
-		public string itemName { get; set; } = null!;
-		public float itemPrice { get; set; }
 	}
 }

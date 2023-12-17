@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Menu.Classes_Interfaces
 {
-	public class Food : rezMenu
+	public class Food : cafeMenu
 	{
-		public int numberOfChoice = 2;
 	}
 }
