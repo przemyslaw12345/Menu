@@ -22,7 +22,7 @@ while (isWroking)
 	Console.ReadKey();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
-void AddEventItemToList(object? sender, cafeMenu e)
+void AddEventItemToList(object? sender, CafeMenu e)
 {
 	const string addedItemEvent = "AddedItemEvent.json";
 	List<string> addedItemEventList = new List<string>();
@@ -32,12 +32,12 @@ void AddEventItemToList(object? sender, cafeMenu e)
 		jsonAddedItemEventList = File.ReadAllText(addedItemEvent);
 		addedItemEventList = JsonSerializer.Deserialize<List<string>>(jsonAddedItemEventList);
 	}
-	string itemAdded = $"Date Added: {DateTime.Now}, Menu Item: {e.itemName}, Menu Price: {e.itemPrice}, From: {sender.GetType().Name}";
+	string itemAdded = $"Date Added: {DateTime.Now}, Menu Item: {e.ItemName}, Menu Price: {e.ItemPrice}, From: {sender.GetType().Name}";
 	addedItemEventList.Add(itemAdded);
 	jsonAddedItemEventList = JsonSerializer.Serialize(addedItemEventList);
 	File.WriteAllText(addedItemEvent, jsonAddedItemEventList);
 }
-void RemoveEventItemToList(object? sender, cafeMenu e)
+void RemoveEventItemToList(object? sender, CafeMenu e)
 {
 	const string removedItemEvent = "RemovedItemEvent.json";
 	List<string> removedItemEventList = new List<string>();
@@ -47,7 +47,7 @@ void RemoveEventItemToList(object? sender, cafeMenu e)
 		jsonRemovedItemEventList = File.ReadAllText(removedItemEvent);
 		removedItemEventList = JsonSerializer.Deserialize<List<string>>(jsonRemovedItemEventList);
 	}
-	string itemRemoved = $"Date Removed: {DateTime.Now}, Menu Item: {e.itemName}, Menu Price: {e.itemPrice}, From: {sender.GetType().Name}";
+	string itemRemoved = $"Date Removed: {DateTime.Now}, Menu Item: {e.ItemName}, Menu Price: {e.ItemPrice}, From: {sender.GetType().Name}";
 	removedItemEventList.Add(itemRemoved);
 	jsonRemovedItemEventList = JsonSerializer.Serialize(removedItemEventList);
 	File.WriteAllText(removedItemEvent, jsonRemovedItemEventList);
@@ -113,7 +113,7 @@ void ViewMenu(IReadRepository<IMenu> menuRepository)
 	var items = menuRepository.GetAll();
 	foreach (var item in items)
 	{	
-		Console.WriteLine(item.Id + ". " + item.itemName + " " + item.itemPrice);	
+		Console.WriteLine(item.Id + ". " + item.ItemName + " " + item.ItemPrice);	
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -168,7 +168,7 @@ void AddDrinkMethod(IWriteRepository<Drink> drinkRepository)
 	string nameOfDrink = NamingDrinkMethod();
 	Console.WriteLine($"What is the drinks price? {Environment.NewLine}");
 	float priceOfDrink = PriceDrinkMethod();
-	drinkRepository.Add(new Drink { itemName = nameOfDrink, itemPrice = priceOfDrink });
+	drinkRepository.Add(new Drink { ItemName = nameOfDrink, ItemPrice = priceOfDrink });
 	drinkRepository.Save();
 }
 string NamingDrinkMethod() => Console.ReadLine();
@@ -179,7 +179,7 @@ void AddMealMethod(IWriteRepository<Food> mealRepository)
 	string nameOfMeal = NamingMealMethod();
 	Console.WriteLine($"What is the meals price? {Environment.NewLine}");
 	float priceOfMeal = PriceMealMethod();
-	mealRepository.Add(new Food { itemName = nameOfMeal, itemPrice = priceOfMeal });
+	mealRepository.Add(new Food { ItemName = nameOfMeal, ItemPrice = priceOfMeal });
 	mealRepository.Save();
 }
 string NamingMealMethod() => Console.ReadLine();

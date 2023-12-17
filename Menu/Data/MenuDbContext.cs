@@ -6,8 +6,8 @@ namespace Menu.Data
 {
 	internal class MenuDbContext : DbContext
 	{
-		DbSet<Drink> drinks => Set<Drink>();
-		DbSet<Food> food => Set<Food>();
+		DbSet<Drink> Drinks => Set<Drink>();
+		DbSet<Food> Food => Set<Food>();
 		
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{

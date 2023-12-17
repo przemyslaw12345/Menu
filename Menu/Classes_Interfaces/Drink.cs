@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Menu.Classes_Interfaces
 {
-	public class Drink : cafeMenu
+	public class Drink : CafeMenu
 	{
 	}
 }
